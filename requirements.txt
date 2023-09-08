@@ -1,4 +1,3 @@
 ossapi==3.3.4
 PyQt6==6.5.2
 configparser==6.0.0
-pyinstaller==5.13.2
