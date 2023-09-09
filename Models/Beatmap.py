@@ -166,6 +166,10 @@ class Beatmap:
         if hash in database.by_hash:
             return database.by_hash[hash]
 
+        # Hashes can change, so fallback on beatmap_id if we can find it
+        if beatmap_id in database.by_id:
+            return database.by_id[beatmap_id]
+
         return cls(
             artist=artist,
             title=title,
@@ -222,6 +226,10 @@ class Beatmap:
 
         if hash in database.by_hash:
             return database.by_hash[hash]
+
+        # Hashes can change, so fallback on beatmap_id if we can find it
+        if beatmap_id in database.by_id:
+            return database.by_id[beatmap_id]
 
         return cls(
             artist=artist,
