@@ -48,16 +48,16 @@ class GenerateFirstsGlobalWindow(GenerateBaseWindow):
 
         # Make collections
         name = self.config.single.format(user.username, self.getMode(), 1)
-        beatmaps = set([score.beatmap for score in firsts])
+        beatmaps = {score.beatmap for score in firsts}
         self.collectionDatabase.append(Collection(name, beatmaps))
 
         if self.getSeparateMods():
             include_visual = self.getIncludeVisual()
-            unique_mods = set([score.get_mods(include_visual) for score in firsts])
+            unique_mods = {score.get_mods(include_visual) for score in firsts}
 
             for mod in unique_mods:
                 modded_name = f"{name} " + self.config.modded.format(mod)
-                beatmaps = set([score.beatmap for score in firsts if mod == score.get_mods(include_visual)])
+                beatmaps = {score.beatmap for score in firsts if mod == score.get_mods(include_visual)}
                 self.collectionDatabase.append(Collection(modded_name, beatmaps))
 
         self.generateProgress.close()
