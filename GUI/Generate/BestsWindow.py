@@ -48,7 +48,7 @@ class GenerateBestsWindow(GenerateBaseWindow):
 
         # Make collections
         name = self.config.bests.format(user.username, self.getMode())
-        beatmaps = set([score.beatmap for score in bests])
+        beatmaps = {score.beatmap for score in bests}
         self.collectionDatabase.append(Collection(name, beatmaps))
 
         if self.getSeparateMods():
@@ -57,7 +57,7 @@ class GenerateBestsWindow(GenerateBaseWindow):
 
             for mod in unique_mods:
                 modded_name = f"{name} " + self.config.modded.format(mod)
-                beatmaps = set([score.beatmap for score in bests if mod == score.get_mods(include_visual)])
+                beatmaps = {score.beatmap for score in bests if mod == score.get_mods(include_visual)}
                 self.collectionDatabase.append(Collection(modded_name, beatmaps))
 
         self.generateProgress.close()
