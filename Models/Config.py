@@ -64,7 +64,7 @@ class Config:
 
     def read(self, path):
         config = ConfigParser()
-        config.read(path)
+        config.read(path, encoding="utf-8-sig")
         self.directory = config.get("Main", "directory", fallback=Config.directory)
         self.app_id = config.getint("API", "app_id", fallback=Config.app_id)
         self.app_token = config.get("API", "app_token", fallback=Config.app_token)
@@ -97,5 +97,5 @@ class Config:
         config.set("Collections", "merged", self.merged)
         config.set("Collections", "intersect", self.intersect)
         config.set("Collections", "leeways", self.leeways)
-        with open(path, 'w') as f:
+        with open(path, 'w', encoding="utf-8-sig") as f:
             config.write(f)
