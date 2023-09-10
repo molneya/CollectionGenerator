@@ -85,13 +85,13 @@ class Collection:
 
     def _encode_collection_osdb(self, bytestream) -> None:
         # Does not encode header. Not intended to be used by itself.
-        full_beatmaps = list(filter(lambda b: not b.missing, self.beatmaps))
-        hash_only_beatmaps = list(filter(lambda b: b.missing, self.beatmaps))
+        recoverable = list(filter(lambda b: b.beatmap_id, self.beatmaps))
+        not_recoverable = list(filter(lambda b: not b.beatmap_id, self.beatmaps))
         StreamEncoder.string(self.name, bytestream)
         StreamEncoder.int(0, bytestream)
-        StreamEncoder.int(len(full_beatmaps), bytestream)
-        for beatmap in full_beatmaps:
+        StreamEncoder.int(len(recoverable), bytestream)
+        for beatmap in recoverable:
             beatmap.encode_beatmap_osdb(bytestream)
-        StreamEncoder.int(len(hash_only_beatmaps), bytestream)
-        for beatmap in hash_only_beatmaps:
+        StreamEncoder.int(len(not_recoverable), bytestream)
+        for beatmap in not_recoverable:
             beatmap.encode_beatmap_osdb_hash(bytestream)
