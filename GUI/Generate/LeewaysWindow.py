@@ -52,7 +52,7 @@ class GenerateLeewaysWindow(GenerateBaseWindow):
 
         for min, max in [(i*0.1, i*0.1+0.1) for i in range(20)][::-1]:
             name = f"{collection.name} " + self.config.leeways.format(min, max, mods)
-            beatmaps = set([beatmap for beatmap in leeways if min <= beatmap.leeway <= max])
+            beatmaps = {beatmap for beatmap in leeways if min <= beatmap.leeway <= max]}
 
             if len(beatmaps) >= 1:
                 self.collectionDatabase.insert(index + 1, Collection(name, beatmaps))

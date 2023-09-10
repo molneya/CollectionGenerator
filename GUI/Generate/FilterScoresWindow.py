@@ -51,7 +51,7 @@ class GenerateFilterScoresWindow(GenerateBaseWindow):
             scores = filter(key, scores)
 
         name = self.getFilterName()
-        beatmaps = set([score.beatmap for score in scores])
+        beatmaps = {score.beatmap for score in scores}
         self.collectionDatabase.append(Collection(name, beatmaps))
 
         self.generateProgress.close()

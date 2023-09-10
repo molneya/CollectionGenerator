@@ -33,10 +33,10 @@ class BeatmapDatabase:
         for _ in range(beatmap_count):
             beatmap = Beatmap.decode_database(bytestream)
             # Hashes should be unique, but do this check anyway
-            if not beatmap.hash in self.by_hash:
+            if beatmap.hash not in self.by_hash:
                 self.by_hash[beatmap.hash] = beatmap
             # IDs are not unique, replace with current if better status
-            if not beatmap.beatmap_id in self.by_id:
+            if beatmap.beatmap_id not in self.by_id:
                 self.by_id[beatmap.beatmap_id] = beatmap
             elif self.by_id[beatmap.beatmap_id].status < beatmap.status:
                 self.by_id[beatmap.beatmap_id] = beatmap
