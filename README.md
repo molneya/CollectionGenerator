@@ -15,7 +15,7 @@ python main.py
 
 ### First Run
 
-When running for the first time, you'll need to edit your configuration to specify your osu! directory and osu!api credentials. Do so by selecting `Config > Edit`, saving your desired changes, then reloading by selecting `Config > Reload`. You can use the program without doing this, but functionality will be limited.
+When running for the first time, you'll need to edit your configuration to specify your osu! directory and osu!api credentials. Do so by selecting `Config` in the menu, then pressing the `Save and Reload` button to save your desired changes. You can use the program without doing this, but functionality will be limited.
 
 ## Usage
 
