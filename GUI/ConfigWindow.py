@@ -107,3 +107,4 @@ class ConfigWindow(QWidget):
         self.config.intersect = self.collectionLineEdits[8].text()
         self.config.leeways = self.collectionLineEdits[9].text()
         self.config.save()
+        self.reload()
