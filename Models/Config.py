@@ -8,7 +8,7 @@ import os
 @dataclass
 class Config:
     directory: str=None
-    app_id: int=None
+    app_id: int=0
     app_token: str=None
     bests: str="{0}'s {1} bests"
     single: str="{0}'s {1} #{2}s"
@@ -85,7 +85,7 @@ class Config:
         config.add_section("API")
         config.add_section("Collections")
         config.set("Main", "directory", self.directory or "")
-        config.set("API", "app_id", str(self.app_id) if self.app_id else "0")
+        config.set("API", "app_id", str(self.app_id))
         config.set("API", "app_token", self.app_token or "")
         config.set("Collections", "bests", self.bests)
         config.set("Collections", "single", self.single)

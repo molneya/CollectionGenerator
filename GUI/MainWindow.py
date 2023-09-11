@@ -1,6 +1,7 @@
 
 from Models.Config import Config
 from Models.CollectionDatabase import CollectionDatabase
+from GUI.ConfigWindow import ConfigWindow
 from GUI.CollectionTable import CollectionTableView
 from GUI.Generate.BestsWindow import GenerateBestsWindow
 from GUI.Generate.FilterBeatmapsWindow import GenerateFilterBeatmapsWindow
@@ -10,7 +11,6 @@ from GUI.Generate.FirstsGlobalWindow import GenerateFirstsGlobalWindow
 from GUI.Generate.LeaderboardsWindow import GenerateLeaderboardsWindow
 from GUI.Generate.LeewaysWindow import GenerateLeewaysWindow
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QApplication, QFileDialog, QLabel, QMessageBox
-from PyQt6.QtCore import QProcess
 from PyQt6.QtGui import QIcon
 from importlib import import_module
 from ossapi import Ossapi
@@ -80,9 +80,7 @@ class MainWindow(QMainWindow):
         firstsMenu.addAction("Global", lambda: self.createGenerateWindow(GenerateFirstsGlobalWindow))
         createMenu.addAction("Leaderboards", lambda: self.createGenerateWindow(GenerateLeaderboardsWindow))
         createMenu.addAction("Leeways", lambda: self.createGenerateWindow(GenerateLeewaysWindow))
-        configMenu = self.menuBar().addMenu("Config")
-        configMenu.addAction("Edit", self.editConfig)
-        configMenu.addAction("Reload", self.loadConfig)
+        self.menuBar().addAction("Config", self.editConfig)
         self.menuBar().addAction("About", self.about)
 
     def createGenerateWindow(self, module):
@@ -93,31 +91,36 @@ class MainWindow(QMainWindow):
 
     def loadConfig(self):
         self.config.load()
-        self.loadOssapi()
         if self.collectionDatabase.database.is_empty():
             self.loadCollectionDatabase()
+        self.loadOssapi()
 
     def editConfig(self):
-        _, path = Config.dirpath()
-        QProcess.startDetached("notepad", [path])
+        window = ConfigWindow(self)
+        window.show()
+        self.windows.append(window)
 
     def loadOssapi(self):
         if not self.config.app_token or not self.config.app_id:
             self.ossapi = None
             return
-        self.ossapi = Ossapi(self.config.app_id, self.config.app_token)
+        try:
+            self.ossapi = Ossapi(self.config.app_id, self.config.app_token)
+        except:
+            QMessageBox.critical(self, "Error", "<p>Invalid API credentials!</p><p>Please edit and reload your config.</p>")
+            self.ossapi = None
 
     def loadCollectionDatabase(self):
         self.statusLabel.setText(f"Loading database...")
         if not self.config.directory:
-            self.statusLabel.setText(f"Failed to find database!")
+            self.statusLabel.setText(f"Failed to find database! To set up, go to <code>Config</code> and select your osu! directory.")
             return
         try:
             filepath = os.path.join(self.config.directory, "osu!.db")
             self.collectionDatabase.load_database(filepath)
         except:
             self.statusLabel.setText(f"Failed to load database!")
-            QMessageBox.critical(self, "Error", "<p>Failed to load database!</p><p>Please correct and reload your config.</p>")
+            QMessageBox.critical(self, "Error", "<p>Failed to load database!</p><p>Please edit and reload your config.</p>")
             return
         self.statusLabel.setText(f"Successfully loaded {len(self.collectionDatabase.database):,} beatmaps from database")
 
@@ -177,7 +180,6 @@ class MainWindow(QMainWindow):
                 return
 
         self.collectionTable.closeEvent(event)
-        self.config.save()
         for window in self.windows:
             window.close()
 
