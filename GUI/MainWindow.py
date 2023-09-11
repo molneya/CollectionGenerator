@@ -80,9 +80,7 @@ class MainWindow(QMainWindow):
         firstsMenu.addAction("Global", lambda: self.createGenerateWindow(GenerateFirstsGlobalWindow))
         createMenu.addAction("Leaderboards", lambda: self.createGenerateWindow(GenerateLeaderboardsWindow))
         createMenu.addAction("Leeways", lambda: self.createGenerateWindow(GenerateLeewaysWindow))
-        configMenu = self.menuBar().addMenu("Config")
-        configMenu.addAction("Edit", self.editConfig)
-        configMenu.addAction("Reload", self.loadConfig)
+        self.menuBar().addAction("Config", self.editConfig)
         self.menuBar().addAction("About", self.about)
 
     def createGenerateWindow(self, module):
@@ -115,7 +113,7 @@ class MainWindow(QMainWindow):
     def loadCollectionDatabase(self):
         self.statusLabel.setText(f"Loading database...")
         if not self.config.directory:
-            self.statusLabel.setText(f"Failed to find database! To set up, go to <code>Config > Edit</code> and select your osu! directory.")
+            self.statusLabel.setText(f"Failed to find database! To set up, go to <code>Config</code> and select your osu! directory.")
             return
         try:
             filepath = os.path.join(self.config.directory, "osu!.db")
