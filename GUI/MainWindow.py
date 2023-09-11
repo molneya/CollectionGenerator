@@ -93,9 +93,9 @@ class MainWindow(QMainWindow):
 
     def loadConfig(self):
         self.config.load()
-        self.loadOssapi()
         if self.collectionDatabase.database.is_empty():
             self.loadCollectionDatabase()
+        self.loadOssapi()
 
     def editConfig(self):
         window = ConfigWindow(self)
@@ -106,19 +106,23 @@ class MainWindow(QMainWindow):
         if not self.config.app_token or not self.config.app_id:
             self.ossapi = None
             return
-        self.ossapi = Ossapi(self.config.app_id, self.config.app_token)
+        try:
+            self.ossapi = Ossapi(self.config.app_id, self.config.app_token)
+        except:
+            QMessageBox.critical(self, "Error", "<p>Invalid API credentials!</p><p>Please edit and reload your config.</p>")
+            self.ossapi = None
 
     def loadCollectionDatabase(self):
         self.statusLabel.setText(f"Loading database...")
         if not self.config.directory:
-            self.statusLabel.setText(f"Failed to find database!")
+            self.statusLabel.setText(f"Failed to find database! To set up, go to <code>Config > Edit</code> and select your osu! directory.")
             return
         try:
             filepath = os.path.join(self.config.directory, "osu!.db")
             self.collectionDatabase.load_database(filepath)
         except:
             self.statusLabel.setText(f"Failed to load database!")
-            QMessageBox.critical(self, "Error", "<p>Failed to load database!</p><p>Please correct and reload your config.</p>")
+            QMessageBox.critical(self, "Error", "<p>Failed to load database!</p><p>Please edit and reload your config.</p>")
             return
         self.statusLabel.setText(f"Successfully loaded {len(self.collectionDatabase.database):,} beatmaps from database")
 
