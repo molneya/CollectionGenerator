@@ -1,6 +1,7 @@
 
 from Models.Config import Config
 from Models.CollectionDatabase import CollectionDatabase
+from GUI.ConfigWindow import ConfigWindow
 from GUI.CollectionTable import CollectionTableView
 from GUI.Generate.BestsWindow import GenerateBestsWindow
 from GUI.Generate.FilterBeatmapsWindow import GenerateFilterBeatmapsWindow
@@ -10,7 +11,6 @@ from GUI.Generate.FirstsGlobalWindow import GenerateFirstsGlobalWindow
 from GUI.Generate.LeaderboardsWindow import GenerateLeaderboardsWindow
 from GUI.Generate.LeewaysWindow import GenerateLeewaysWindow
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QApplication, QFileDialog, QLabel, QMessageBox
-from PyQt6.QtCore import QProcess
 from PyQt6.QtGui import QIcon
 from importlib import import_module
 from ossapi import Ossapi
@@ -98,8 +98,9 @@ class MainWindow(QMainWindow):
             self.loadCollectionDatabase()
 
     def editConfig(self):
-        _, path = Config.dirpath()
-        QProcess.startDetached("notepad", [path])
+        window = ConfigWindow(self)
+        window.show()
+        self.windows.append(window)
 
     def loadOssapi(self):
         if not self.config.app_token or not self.config.app_id:
@@ -177,7 +178,6 @@ class MainWindow(QMainWindow):
                 return
 
         self.collectionTable.closeEvent(event)
-        self.config.save()
         for window in self.windows:
             window.close()
 
