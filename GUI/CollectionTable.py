@@ -69,6 +69,7 @@ class CollectionTableView(QTableView):
         self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked)
 
     def refresh(self):
+        self.clearSelection()
         self.model().layoutChanged.emit()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
