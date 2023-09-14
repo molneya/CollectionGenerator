@@ -33,7 +33,7 @@ class GenerateFirstsCountryWindow(GenerateBaseWindow):
         }
         parameters = {
             'file': None,
-            'name': self.config.single.format(user.username, user.country_code.upper(), 1),
+            'name': "collection",
             'type': "create",
         }
 
@@ -50,6 +50,10 @@ class GenerateFirstsCountryWindow(GenerateBaseWindow):
 
         bytestream = BytesIO(r.content)
         self.collectionDatabase.decode_collection_db(bytestream)
+
+        # Due to a bug with huisemtbenen, the collection name will not be quite what we named it in all circumstances. Thus, we must rename it ourselves.
+        collection = self.collectionDatabase.collections[-1]
+        collection.name = self.config.single.format(user.username, user.country_code.upper(), 1)
 
         self.generateProgress.close()
         self.collectionTable.refresh()
