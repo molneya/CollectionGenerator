@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.config = Config()
         self.ossapi = None
 
-        self.windows = []
+        self.childWindow = None
         self.createLayout()
         self.loadConfig()
 
@@ -84,10 +84,9 @@ class MainWindow(QMainWindow):
         self.menuBar().addAction("About", self.about)
 
     def createGenerateWindow(self, module):
-        window = module.create(self)
-        if window:
-            window.show()
-            self.windows.append(window)
+        self.childWindow = module.create(self)
+        if self.childWindow:
+            self.childWindow.show()
 
     def loadConfig(self):
         self.config.load()
@@ -96,9 +95,9 @@ class MainWindow(QMainWindow):
         self.loadOssapi()
 
     def editConfig(self):
-        window = ConfigWindow(self)
-        window.show()
-        self.windows.append(window)
+        self.childWindow = ConfigWindow(self)
+        if self.childWindow:
+            self.childWindow.show()
 
     def loadOssapi(self):
         if not self.config.app_token or not self.config.app_id:
@@ -180,8 +179,8 @@ class MainWindow(QMainWindow):
                 return
 
         self.collectionTable.closeEvent(event)
-        for window in self.windows:
-            window.close()
+        if self.childWindow:
+            self.childWindow.close()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
