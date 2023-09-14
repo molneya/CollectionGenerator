@@ -47,6 +47,7 @@ class ConfigWindow(QWidget):
         self.apiTokenLineEdit = QLineEdit()
         self.apiTokenLineEdit.setText(self.config.app_token)
         self.apiTokenLineEdit.setPlaceholderText("Application Token")
+        self.apiTokenLineEdit.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
         layoutHorizontal = QHBoxLayout()
         layoutHorizontal.addWidget(self.apiIdSpinBox)
         layoutHorizontal.addWidget(self.apiTokenLineEdit)
