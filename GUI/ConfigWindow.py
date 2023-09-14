@@ -1,5 +1,6 @@
 
 from PyQt6.QtWidgets import QWidget, QFormLayout, QHBoxLayout, QLineEdit, QFileDialog, QPushButton, QSpinBox, QLabel
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 
 class ConfigWindow(QWidget):
@@ -12,6 +13,7 @@ class ConfigWindow(QWidget):
         self.setWindowTitle("Edit Config")
         self.setWindowIcon(self.icon)
         self.resize(600, 1)
+        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Dialog)
 
         layout = QFormLayout()
         self.createForm(layout)
