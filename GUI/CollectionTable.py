@@ -58,7 +58,6 @@ class CollectionTableView(QTableView):
         self.main = main
         self.config = main.config
         self.collectionDatabase = main.collectionDatabase
-        self.generateLeewaysWindow = None
 
         tableModel = CollectionTableModel(self.collectionDatabase)
         self.setModel(tableModel)
@@ -127,7 +126,3 @@ class CollectionTableView(QTableView):
     def intersectCollections(self, indices):
         self.collectionDatabase.intersect(indices, self.config.intersect)
         self.refresh()
-
-    def closeEvent(self, event):
-        if self.generateLeewaysWindow:
-            self.generateLeewaysWindow.close()

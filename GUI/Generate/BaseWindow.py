@@ -1,6 +1,7 @@
 
 from Models.Filter import Filter
 from PyQt6.QtWidgets import QWidget, QFormLayout, QLineEdit, QPushButton, QProgressDialog, QApplication, QCheckBox, QComboBox, QHBoxLayout, QSpinBox, QMessageBox, QLabel
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6 import QtTest
 
@@ -18,6 +19,7 @@ class GenerateBaseWindow(QWidget):
         self.setWindowTitle(self.name)
         self.setWindowIcon(self.icon)
         self.resize(400, 1)
+        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Dialog)
 
         layout = QFormLayout()
         self.createForm(layout)

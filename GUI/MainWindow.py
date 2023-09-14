@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.config = Config()
         self.ossapi = None
 
-        self.windows = []
+        self.childWindow = None
         self.createLayout()
         self.loadConfig()
 
@@ -80,25 +80,29 @@ class MainWindow(QMainWindow):
         firstsMenu.addAction("Global", lambda: self.createGenerateWindow(GenerateFirstsGlobalWindow))
         createMenu.addAction("Leaderboards", lambda: self.createGenerateWindow(GenerateLeaderboardsWindow))
         createMenu.addAction("Leeways", lambda: self.createGenerateWindow(GenerateLeewaysWindow))
-        self.menuBar().addAction("Config", self.editConfig)
+        self.menuBar().addAction("Config", self.createConfigWindow)
         self.menuBar().addAction("About", self.about)
+
+    def createChildWindow(self, window):
+        if self.childWindow:
+            self.childWindow.close()
+        self.childWindow = window
+        if self.childWindow:
+            self.childWindow.show()
 
     def createGenerateWindow(self, module):
         window = module.create(self)
-        if window:
-            window.show()
-            self.windows.append(window)
+        self.createChildWindow(window)
+
+    def createConfigWindow(self):
+        window = ConfigWindow(self)
+        self.createChildWindow(window)
 
     def loadConfig(self):
         self.config.load()
         if self.collectionDatabase.database.is_empty():
             self.loadCollectionDatabase()
         self.loadOssapi()
-
-    def editConfig(self):
-        window = ConfigWindow(self)
-        window.show()
-        self.windows.append(window)
 
     def loadOssapi(self):
         if not self.config.app_token or not self.config.app_id:
@@ -180,8 +184,8 @@ class MainWindow(QMainWindow):
                 return
 
         self.collectionTable.closeEvent(event)
-        for window in self.windows:
-            window.close()
+        if self.childWindow:
+            self.childWindow.close()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
