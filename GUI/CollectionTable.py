@@ -139,9 +139,13 @@ class CollectionTableView(QTableView):
         self.refresh()
 
     def mergeCollections(self):
+        if not self.selectedRows():
+            return
         self.collectionDatabase.merge(self.selectedRows(), self.config.merged)
         self.refresh()
 
     def intersectCollections(self):
+        if not self.selectedRows():
+            return
         self.collectionDatabase.intersect(self.selectedRows(), self.config.intersect)
         self.refresh()
