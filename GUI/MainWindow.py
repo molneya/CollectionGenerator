@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         openMenu = fileMenu.addMenu("Open")
         openMenu.addAction("File", QKeySequence("Ctrl+O"), self.loadCollection)
         openMenu.addAction("osu! Collection", QKeySequence("Ctrl+Alt+O"), self.loadOsuCollection)
-        saveMenu = fileMenu.addMenu("Save As")
+        saveMenu = fileMenu.addMenu("Save")
         saveMenu.addAction("File", QKeySequence("Ctrl+S"), self.saveCollection)
         saveMenu.addAction("osu! Collection", QKeySequence("Ctrl+Alt+S"), self.saveOsuCollection)
         fileMenu.addAction("Exit", QKeySequence("Alt+F4"), self.close)
