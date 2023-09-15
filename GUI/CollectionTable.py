@@ -1,7 +1,8 @@
 
 from Models.Config import Config
-from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu, QFileDialog
+from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu, QFileDialog, QShortcut
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
+from PyQt6.QtGui import QKeySequence
 from functools import cmp_to_key
 import locale
 
@@ -66,6 +67,7 @@ class CollectionTableView(QTableView):
         self.setWordWrap(False)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked)
+        self.createShortcuts()
 
     def refresh(self):
         self.clearSelection()
@@ -74,10 +76,24 @@ class CollectionTableView(QTableView):
         self.resizeRowsToContents()
         self.horizontalHeader().setStretchLastSection(True)
 
+    def createShortcuts(self):
+        self.saveShortcut = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
+        self.saveShortcut.activated.connect(self.saveCollections)
+        self.deleteShortcut = QShortcut(QKeySequence("Delete"), self)
+        self.deleteShortcut.activated.connect(self.deleteCollections)
+        self.duplicateShortcut = QShortcut(QKeySequence("Ctrl+D"), self)
+        self.duplicateShortcut.activated.connect(self.duplicateCollections)
+        self.invertShortcut = QShortcut(QKeySequence("Ctrl+I"), self)
+        self.invertShortcut.activated.connect(self.invertCollections)
+        self.mergeShortcut = QShortcut(QKeySequence("Ctrl+M"), self)
+        self.mergeShortcut.activated.connect(self.mergeCollections)
+        self.intersectShortcut = QShortcut(QKeySequence("Ctrl+U"), self)
+        self.intersectShortcut.activated.connect(self.intersectCollections)
+
     def contextMenuEvent(self, event):
         rows = list(set([selection.row() for selection in self.selectedIndexes()]))
         menu = QMenu(self)
-        menu.addAction("Save", lambda: self.saveCollection(rows))
+        menu.addAction("Save", lambda: self.saveCollections(rows))
         menu.addAction("Delete", lambda: self.deleteCollections(rows))
         menu.addSeparator()
         menu.addAction("Duplicate", lambda: self.duplicateCollections(rows))
@@ -96,7 +112,7 @@ class CollectionTableView(QTableView):
 
         menu.popup(event.globalPos())
 
-    def saveCollection(self, indices):
+    def saveCollections(self, indices):
         for index in indices:
             collection = self.collectionDatabase.collections[index]
             filepath = QFileDialog.getSaveFileName(self, "Save Collection", f"{collection.name}.osdb", "Collection Manager Database (*.osdb);;osu! Collection Database (*.db)")[0]
