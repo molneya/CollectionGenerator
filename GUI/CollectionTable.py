@@ -1,8 +1,8 @@
 
 from Models.Config import Config
-from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu, QFileDialog, QShortcut
+from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu, QFileDialog
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
-from PyQt6.QtGui import QKeySequence
+from PyQt6.QtGui import QShortcut, QKeySequence
 from functools import cmp_to_key
 import locale
 
@@ -76,6 +76,9 @@ class CollectionTableView(QTableView):
         self.resizeRowsToContents()
         self.horizontalHeader().setStretchLastSection(True)
 
+    def selectedRows(self):
+        return list({selection.row() for selection in self.selectedIndexes()})
+
     def createShortcuts(self):
         self.saveShortcut = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
         self.saveShortcut.activated.connect(self.saveCollections)
@@ -91,54 +94,54 @@ class CollectionTableView(QTableView):
         self.intersectShortcut.activated.connect(self.intersectCollections)
 
     def contextMenuEvent(self, event):
-        rows = list(set([selection.row() for selection in self.selectedIndexes()]))
         menu = QMenu(self)
-        menu.addAction("Save", lambda: self.saveCollections(rows))
-        menu.addAction("Delete", lambda: self.deleteCollections(rows))
+        menu.addAction("Save", self.saveCollections)
+        menu.addAction("Delete", self.deleteCollections)
         menu.addSeparator()
-        menu.addAction("Duplicate", lambda: self.duplicateCollections(rows))
-        menu.addAction("Invert", lambda: self.invertCollections(rows))
+        menu.addAction("Duplicate", self.duplicateCollections)
+        menu.addAction("Invert", self.invertCollections)
         menu.addSeparator()
 
-        if len(rows) == 1:
+        selected = self.selectedRows()
+        if len(selected) == 1:
             subtract = menu.addMenu("Subtract")
             for index, collection in enumerate(self.collectionDatabase.collections):
-                if rows[0] != index:
-                    subtract.addAction(collection.name, lambda index=index: self.subtractCollections(rows[0], index))
+                if selected[0] != index:
+                    subtract.addAction(collection.name, lambda index=index: self.subtractCollections(index))
 
-        if len(rows) > 1:
-            menu.addAction("Merge", lambda: self.mergeCollections(rows))
-            menu.addAction("Intersect", lambda: self.intersectCollections(rows))
+        if len(selected) > 1:
+            menu.addAction("Merge", self.mergeCollections)
+            menu.addAction("Intersect", self.intersectCollections)
 
         menu.popup(event.globalPos())
 
-    def saveCollections(self, indices):
-        for index in indices:
+    def saveCollections(self):
+        for index in self.selectedRows():
             collection = self.collectionDatabase.collections[index]
             filepath = QFileDialog.getSaveFileName(self, "Save Collection", f"{collection.name}.osdb", "Collection Manager Database (*.osdb);;osu! Collection Database (*.db)")[0]
             Config.backup(filepath)
             collection.save_file(filepath)
 
-    def deleteCollections(self, indices):
-        self.collectionDatabase.delete(indices)
+    def deleteCollections(self):
+        self.collectionDatabase.delete(self.selectedRows())
         self.refresh()
 
-    def duplicateCollections(self, indices):
-        self.collectionDatabase.duplicate(indices, self.config.duplicate)
+    def duplicateCollections(self):
+        self.collectionDatabase.duplicate(self.selectedRows(), self.config.duplicate)
         self.refresh()
 
-    def invertCollections(self, indices):
-        self.collectionDatabase.invert(indices, self.config.inverse)
+    def invertCollections(self):
+        self.collectionDatabase.invert(self.selectedRows(), self.config.inverse)
         self.refresh()
 
-    def subtractCollections(self, index1, index2):
-        self.collectionDatabase.subtract(index1, index2, self.config.subtract)
+    def subtractCollections(self, index):
+        self.collectionDatabase.subtract(self.selectedRows()[0], index, self.config.subtract)
         self.refresh()
 
-    def mergeCollections(self, indices):
-        self.collectionDatabase.merge(indices, self.config.merged)
+    def mergeCollections(self):
+        self.collectionDatabase.merge(self.selectedRows(), self.config.merged)
         self.refresh()
 
-    def intersectCollections(self, indices):
-        self.collectionDatabase.intersect(indices, self.config.intersect)
+    def intersectCollections(self):
+        self.collectionDatabase.intersect(self.selectedRows(), self.config.intersect)
         self.refresh()
