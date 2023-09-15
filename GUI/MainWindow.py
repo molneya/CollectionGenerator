@@ -11,7 +11,7 @@ from GUI.Generate.FirstsGlobalWindow import GenerateFirstsGlobalWindow
 from GUI.Generate.LeaderboardsWindow import GenerateLeaderboardsWindow
 from GUI.Generate.LeewaysWindow import GenerateLeewaysWindow
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QApplication, QFileDialog, QLabel, QMessageBox
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QKeySequence
 from importlib import import_module
 from ossapi import Ossapi
 import sys
@@ -62,25 +62,25 @@ class MainWindow(QMainWindow):
 
     def createMenu(self):
         fileMenu = self.menuBar().addMenu("File")
-        fileMenu.addAction("New", self.clearCollection)
+        fileMenu.addAction("New", QKeySequence("Ctrl+N"), self.clearCollection)
         openMenu = fileMenu.addMenu("Open")
-        openMenu.addAction("File", self.loadCollection)
-        openMenu.addAction("osu! Collection", self.loadOsuCollection)
+        openMenu.addAction("File", QKeySequence("Ctrl+O"), self.loadCollection)
+        openMenu.addAction("osu! Collection", QKeySequence("Ctrl+Alt+O"), self.loadOsuCollection)
         saveMenu = fileMenu.addMenu("Save As")
-        saveMenu.addAction("File", self.saveCollection)
-        saveMenu.addAction("osu! Collection", self.saveOsuCollection)
-        fileMenu.addAction("Exit", self.close)
+        saveMenu.addAction("File", QKeySequence("Ctrl+S"), self.saveCollection)
+        saveMenu.addAction("osu! Collection", QKeySequence("Ctrl+Alt+S"), self.saveOsuCollection)
+        fileMenu.addAction("Exit", QKeySequence("Alt+F4"), self.close)
         createMenu = self.menuBar().addMenu("Generate")
-        createMenu.addAction("Bests", lambda: self.createGenerateWindow(GenerateBestsWindow))
+        createMenu.addAction("Bests", QKeySequence("Ctrl+1"), lambda: self.createGenerateWindow(GenerateBestsWindow))
         filterMenu = createMenu.addMenu("Filter")
-        filterMenu.addAction("Beatmaps", lambda: self.createGenerateWindow(GenerateFilterBeatmapsWindow))
-        filterMenu.addAction("Scores", lambda: self.createGenerateWindow(GenerateFilterScoresWindow))
+        filterMenu.addAction("Beatmaps", QKeySequence("Ctrl+2"), lambda: self.createGenerateWindow(GenerateFilterBeatmapsWindow))
+        filterMenu.addAction("Scores", QKeySequence("Ctrl+3"), lambda: self.createGenerateWindow(GenerateFilterScoresWindow))
         firstsMenu = createMenu.addMenu("Firsts")
-        firstsMenu.addAction("Country", lambda: self.createGenerateWindow(GenerateFirstsCountryWindow))
-        firstsMenu.addAction("Global", lambda: self.createGenerateWindow(GenerateFirstsGlobalWindow))
-        createMenu.addAction("Leaderboards", lambda: self.createGenerateWindow(GenerateLeaderboardsWindow))
-        createMenu.addAction("Leeways", lambda: self.createGenerateWindow(GenerateLeewaysWindow))
-        self.menuBar().addAction("Config", self.createConfigWindow)
+        firstsMenu.addAction("Country", QKeySequence("Ctrl+4"), lambda: self.createGenerateWindow(GenerateFirstsCountryWindow))
+        firstsMenu.addAction("Global", QKeySequence("Ctrl+5"), lambda: self.createGenerateWindow(GenerateFirstsGlobalWindow))
+        createMenu.addAction("Leaderboards", QKeySequence("Ctrl+6"), lambda: self.createGenerateWindow(GenerateLeaderboardsWindow))
+        createMenu.addAction("Leeways", QKeySequence("Ctrl+7"), lambda: self.createGenerateWindow(GenerateLeewaysWindow))
+        self.menuBar().addAction("Config", QKeySequence("Ctrl+E"), self.createConfigWindow)
         self.menuBar().addAction("About", self.about)
 
     def createChildWindow(self, window):
