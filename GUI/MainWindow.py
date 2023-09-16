@@ -71,32 +71,26 @@ class MainWindow(QMainWindow):
         saveMenu.addAction("osu! Collection", QKeySequence("Ctrl+Alt+S"), self.saveOsuCollection)
         fileMenu.addAction("Exit", QKeySequence("Alt+F4"), self.close)
         createMenu = self.menuBar().addMenu("Generate")
-        createMenu.addAction("Bests", QKeySequence("Ctrl+1"), lambda: self.createGenerateWindow(GenerateBestsWindow))
+        createMenu.addAction("Bests", QKeySequence("Ctrl+1"), lambda: self.createWindow(GenerateBestsWindow))
         filterMenu = createMenu.addMenu("Filter")
-        filterMenu.addAction("Beatmaps", QKeySequence("Ctrl+2"), lambda: self.createGenerateWindow(GenerateFilterBeatmapsWindow))
-        filterMenu.addAction("Scores", QKeySequence("Ctrl+3"), lambda: self.createGenerateWindow(GenerateFilterScoresWindow))
+        filterMenu.addAction("Beatmaps", QKeySequence("Ctrl+2"), lambda: self.createWindow(GenerateFilterBeatmapsWindow))
+        filterMenu.addAction("Scores", QKeySequence("Ctrl+3"), lambda: self.createWindow(GenerateFilterScoresWindow))
         firstsMenu = createMenu.addMenu("Firsts")
-        firstsMenu.addAction("Country", QKeySequence("Ctrl+4"), lambda: self.createGenerateWindow(GenerateFirstsCountryWindow))
-        firstsMenu.addAction("Global", QKeySequence("Ctrl+5"), lambda: self.createGenerateWindow(GenerateFirstsGlobalWindow))
-        createMenu.addAction("Leaderboards", QKeySequence("Ctrl+6"), lambda: self.createGenerateWindow(GenerateLeaderboardsWindow))
-        createMenu.addAction("Leeways", QKeySequence("Ctrl+7"), lambda: self.createGenerateWindow(GenerateLeewaysWindow))
-        self.menuBar().addAction("Config", QKeySequence("Ctrl+E"), self.createConfigWindow)
+        firstsMenu.addAction("Country", QKeySequence("Ctrl+4"), lambda: self.createWindow(GenerateFirstsCountryWindow))
+        firstsMenu.addAction("Global", QKeySequence("Ctrl+5"), lambda: self.createWindow(GenerateFirstsGlobalWindow))
+        createMenu.addAction("Leaderboards", QKeySequence("Ctrl+6"), lambda: self.createWindow(GenerateLeaderboardsWindow))
+        createMenu.addAction("Leeways", QKeySequence("Ctrl+7"), lambda: self.createWindow(GenerateLeewaysWindow))
+        self.menuBar().addAction("Config", QKeySequence("Ctrl+E"), lambda: self.createWindow(ConfigWindow))
         self.menuBar().addAction("About", self.about)
 
-    def createChildWindow(self, window):
+    def createWindow(self, Module):
         if self.childWindow:
             self.childWindow.close()
-        self.childWindow = window
-        if self.childWindow:
+        try:
+            self.childWindow = Module(self)
             self.childWindow.show()
-
-    def createGenerateWindow(self, module):
-        window = module.create(self)
-        self.createChildWindow(window)
-
-    def createConfigWindow(self):
-        window = ConfigWindow(self)
-        self.createChildWindow(window)
+        except Exception as e:
+            QMessageBox.critical(self, "Exception", str(e))
 
     def loadConfig(self):
         self.config.load()
@@ -110,29 +104,29 @@ class MainWindow(QMainWindow):
             return
         try:
             self.ossapi = Ossapi(self.config.app_id, self.config.app_token)
-        except:
-            QMessageBox.critical(self, "Error", "<p>Invalid API credentials!</p><p>Please edit and reload your config.</p>")
+        except Exception as e:
+            QMessageBox.critical(self, "Exception", str(e))
             self.ossapi = None
 
     def loadCollectionDatabase(self):
-        self.statusLabel.setText(f"Loading database...")
+        self.statusLabel.setText("Loading database...")
         if not self.config.directory:
-            self.statusLabel.setText(f"Failed to find database! To set up, go to <code>Config</code> and select your osu! directory.")
+            self.statusLabel.setText("To set up, open <code>Config</code> and select your osu! directory")
             return
         try:
             filepath = os.path.join(self.config.directory, "osu!.db")
             self.collectionDatabase.load_database(filepath)
-        except:
-            self.statusLabel.setText(f"Failed to load database!")
-            QMessageBox.critical(self, "Error", "<p>Failed to load database!</p><p>Please edit and reload your config.</p>")
+            self.statusLabel.setText(f"Successfully loaded {len(self.collectionDatabase.database):,} beatmaps from database")
+        except Exception as e:
+            self.statusLabel.setText("Failed to load database")
+            QMessageBox.critical(self, "Exception", str(e))
             return
-        self.statusLabel.setText(f"Successfully loaded {len(self.collectionDatabase.database):,} beatmaps from database")
 
     def loadCollectionFilepath(self, filepath):
         try:
             self.collectionDatabase.load_file(filepath)
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"<p>File error: {e}</p><p>Perhaps file extension is wrong?</p>")
+            QMessageBox.critical(self, "Exception", str(e))
 
     def loadCollection(self):
         filepath = QFileDialog.getOpenFileName(self, "Open Collection", "", "Collection Manager Database (*.osdb);;osu! Collection Database (*.db);;Text Files (*.txt);;All Files (*.*)")[0]
@@ -140,12 +134,12 @@ class MainWindow(QMainWindow):
         self.collectionTable.refresh()
 
     def loadOsuCollection(self):
-        if not self.config.directory:
-            QMessageBox.critical(self, "Error", "<p>Config error: Directory not specified!</p><p>Please edit and reload your config before using this feature.</p>")
-            return
-        filepath = os.path.join(self.config.directory, "collection.db")
-        self.loadCollectionFilepath(filepath)
-        self.collectionTable.refresh()
+        try:
+            filepath = os.path.join(self.config.directory, "collection.db")
+            self.loadCollectionFilepath(filepath)
+            self.collectionTable.refresh()
+        except Exception as e:
+            QMessageBox.critical(self, "Exception", str(e))
 
     def dropEvent(self, event):
         filepaths = [url.toLocalFile() for url in event.mimeData().urls()]
@@ -159,13 +153,13 @@ class MainWindow(QMainWindow):
         self.collectionDatabase.save_file(filepath)
 
     def saveOsuCollection(self):
-        if not self.config.directory:
-            QMessageBox.critical(self, "Error", "<p>Config error: Directory not specified!</p><p>Please edit and reload your config before using this feature.</p>")
-            return
-        filepath = os.path.join(self.config.directory, "collection.db")
-        Config.backup(filepath)
-        self.collectionDatabase.save_file(filepath)
-        QMessageBox.information(self, "Save", "<p>Saved osu! collection.</p>")
+        try:
+            filepath = os.path.join(self.config.directory, "collection.db")
+            Config.backup(filepath)
+            self.collectionDatabase.save_file(filepath)
+            QMessageBox.information(self, "Save", "Saved osu! collection")
+        except Exception as e:
+            QMessageBox.critical(self, "Exception", str(e))
 
     def clearCollection(self):
         if len(self.collectionDatabase) > 0:

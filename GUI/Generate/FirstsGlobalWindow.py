@@ -6,14 +6,7 @@ from PyQt6.QtWidgets import QMessageBox
 
 class GenerateFirstsGlobalWindow(GenerateBaseWindow):
     def __init__(self, main):
-        super().__init__(main, "Global Firsts")
-
-    @classmethod
-    def create(cls, main):
-        if not main.ossapi:
-            QMessageBox.critical(main, "Error", "<p>Config error: Missing API credentials!</p><p>Please edit and reload your config before using this feature.</p>")
-            return
-        return cls(main)
+        super().__init__(main, "Global Firsts", requiresApi=True)
 
     def createForm(self, layout):
         self.createUsername(layout)

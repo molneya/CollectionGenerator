@@ -8,14 +8,7 @@ import json
 
 class GenerateLeaderboardsWindow(GenerateBaseWindow):
     def __init__(self, main):
-        super().__init__(main, "Leaderboards")
-
-    @classmethod
-    def create(cls, main):
-        if main.collectionDatabase.database.is_empty():
-            QMessageBox.critical(main, "Error", "<p>Config error: osu!.db not loaded!</p><p>Please edit and reload your config before using this feature.</p>")
-            return
-        return cls(main)
+        super().__init__(main, "Leaderboards", requiresDatabase=True)
 
     def createForm(self, layout):
         self.createUsername(layout)
