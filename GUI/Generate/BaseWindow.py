@@ -23,8 +23,8 @@ class GenerateBaseWindow(QWidget):
 
         self.setWindowTitle(self.name)
         self.setWindowIcon(self.icon)
-        self.resize(400, 1)
-        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Dialog)
+        self.setFixedWidth(400)
+        self.setWindowFlags(Qt.WindowType.Dialog)
 
         layout = QFormLayout()
         self.createForm(layout)
