@@ -3,20 +3,12 @@ from Models.Score import Score
 from Models.Stream import StreamDecoder
 from Models.Collection import Collection
 from GUI.Generate.BaseWindow import GenerateBaseWindow
-from PyQt6.QtWidgets import QMessageBox
 import os
 
 class GenerateFilterScoresWindow(GenerateBaseWindow):
     def __init__(self, main):
-        super().__init__(main, "Filter Scores")
+        super().__init__(main, "Filter Scores", requiresDatabase=True)
         self.scores = []
-
-    @classmethod
-    def create(cls, main):
-        if main.collectionDatabase.database.is_empty():
-            QMessageBox.critical(main, "Error", "<p>Config error: osu!.db not loaded!</p><p>Please edit and reload your config before using this feature.</p>")
-            return
-        return cls(main)
 
     def createForm(self, layout):
         self.createFilters(layout, Score)

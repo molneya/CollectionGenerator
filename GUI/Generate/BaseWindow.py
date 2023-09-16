@@ -6,28 +6,40 @@ from PyQt6.QtGui import QIcon
 from PyQt6 import QtTest
 
 class GenerateBaseWindow(QWidget):
-    def __init__(self, main, name="This text should not appear"):
+    def __init__(self, main, name="Name", requiresApi=False, requiresDatabase=False, requiresCollections=False):
         super().__init__(parent=None)
         self.config = main.config
         self.ossapi = main.ossapi
         self.collectionDatabase = main.collectionDatabase
         self.collectionTable = main.collectionTable
         self.icon = main.icon
-        self.name = name
         self.generateProgress = None
+
+        self.name = name
+        self.requiresApi = requiresApi
+        self.requiresDatabase = requiresDatabase
+        self.requiresCollections = requiresCollections
+        self.checkRequirements(main)
 
         self.setWindowTitle(self.name)
         self.setWindowIcon(self.icon)
-        self.resize(400, 1)
-        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Dialog)
+        self.setFixedWidth(400)
+        self.setWindowFlags(Qt.WindowType.Dialog)
 
         layout = QFormLayout()
         self.createForm(layout)
         self.setLayout(layout)
 
-    @classmethod
-    def create(cls, main):
-        return cls(main)
+    def checkRequirements(self, main):
+        if self.requiresApi:
+            if not main.ossapi:
+                raise Exception("Missing API credentials!")
+        if self.requiresDatabase:
+            if main.collectionDatabase.database.is_empty():
+                raise Exception("Database not loaded!")
+        if self.requiresCollections:
+            if len(main.collectionDatabase) == 0:
+                raise Exception("No collections loaded!")
 
     def closeEvent(self, event):
         if self.generateProgress:

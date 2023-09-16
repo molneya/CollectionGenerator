@@ -2,22 +2,11 @@
 from Models.Collection import Collection
 from Models.BeatmapParser import BeatmapParser
 from GUI.Generate.BaseWindow import GenerateBaseWindow
-from PyQt6.QtWidgets import QMessageBox
 import os
 
 class GenerateLeewaysWindow(GenerateBaseWindow):
     def __init__(self, main):
-        super().__init__(main, "Leeways")
-
-    @classmethod
-    def create(cls, main):
-        if main.collectionDatabase.database.is_empty():
-            QMessageBox.critical(main, "Error", "<p>Config error: osu!.db not loaded!</p><p>Please edit and reload your config before using this feature.</p>")
-            return
-        if len(main.collectionDatabase) == 0:
-            QMessageBox.critical(main, "Error", "<p>Collection error: No collections loaded!</p><p>Please load a collection before using this feature.</p>")
-            return
-        return cls(main)
+        super().__init__(main, "Leeways", requiresDatabase=True, requiresCollections=True)
 
     def createForm(self, layout):
         self.createCollection(layout)

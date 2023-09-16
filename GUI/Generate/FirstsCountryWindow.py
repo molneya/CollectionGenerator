@@ -7,14 +7,7 @@ import json
 
 class GenerateFirstsCountryWindow(GenerateBaseWindow):
     def __init__(self, main):
-        super().__init__(main, "Country Firsts")
-
-    @classmethod
-    def create(cls, main):
-        if main.collectionDatabase.database.is_empty():
-            QMessageBox.critical(main, "Error", "<p>Config error: osu!.db not loaded!</p><p>Please edit and reload your config before using this feature.</p>")
-            return
-        return cls(main)
+        super().__init__(main, "Country Firsts", requiresApi=True, requiresDatabase=True)
 
     def createForm(self, layout):
         self.createUsername(layout)

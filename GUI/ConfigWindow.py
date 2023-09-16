@@ -12,8 +12,8 @@ class ConfigWindow(QWidget):
 
         self.setWindowTitle("Edit Config")
         self.setWindowIcon(self.icon)
-        self.resize(600, 1)
-        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Dialog)
+        self.setFixedWidth(700)
+        self.setWindowFlags(Qt.WindowType.Dialog)
 
         layout = QFormLayout()
         self.createForm(layout)
