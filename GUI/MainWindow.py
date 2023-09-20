@@ -19,7 +19,7 @@ import os
 
 class MainWindow(QMainWindow):
     name = "Collection Generator"
-    version = "v20230915.1"
+    version = "v20230920.1"
 
     def __init__(self):
         super().__init__(parent=None)
