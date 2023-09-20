@@ -1,5 +1,5 @@
 
-from PyQt6.QtWidgets import QWidget, QFormLayout, QHBoxLayout, QLineEdit, QFileDialog, QPushButton, QSpinBox, QLabel
+from PyQt6.QtWidgets import QWidget, QFormLayout, QHBoxLayout, QVBoxLayout, QLineEdit, QFileDialog, QPushButton, QSpinBox, QLabel, QGroupBox
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 
@@ -15,15 +15,26 @@ class ConfigWindow(QWidget):
         self.setFixedWidth(700)
         self.setWindowFlags(Qt.WindowType.Dialog)
 
-        layout = QFormLayout()
-        self.createForm(layout)
+        layout = QVBoxLayout()
+        self.createSettingsBox(layout)
+        self.createCollectionsBox(layout)
+        self.createSaveButton(layout)
         self.setLayout(layout)
 
-    def createForm(self, layout):
-        self.createDirectorySelection(layout)
-        self.createApiSelection(layout)
-        self.createCollections(layout)
-        self.createSaveButton(layout)
+    def createSettingsBox(self, layout):
+        settingsBox = QGroupBox("Settings")
+        settingsLayout = QFormLayout()
+        self.createDirectorySelection(settingsLayout)
+        self.createApiSelection(settingsLayout)
+        settingsBox.setLayout(settingsLayout)
+        layout.addWidget(settingsBox)
+
+    def createCollectionsBox(self, layout):
+        collectionsBox = QGroupBox("Generated Collection Names")
+        collectionLayout = QFormLayout()
+        self.createCollections(collectionLayout)
+        collectionsBox.setLayout(collectionLayout)
+        layout.addWidget(collectionsBox)
 
     def createDirectorySelection(self, layout):
         self.directoryLineEdit = QLineEdit()
@@ -42,18 +53,22 @@ class ConfigWindow(QWidget):
         if directory: self.directoryLineEdit.setText(directory)
 
     def createApiSelection(self, layout):
+        tooltip = "<p>You can find this by:<ol><li>Going into your <b>account settings</b> on osu.ppy.sh</li><li>Scrolling down to <b>OAuth</b></li><li>Creating a <b>New OAuth Application</b> if you don't already have one (set whatever name)</li><li>Copying the <b>Client ID</b> and <b>Client Secret</b> into these fields</li></ol></p>"
         self.apiIdSpinBox = QSpinBox()
         self.apiIdSpinBox.setRange(0, 9999999)
         self.apiIdSpinBox.setValue(self.config.app_id)
-        self.apiIdSpinBox.setToolTip("Application ID")
+        self.apiIdSpinBox.setToolTip(tooltip)
         self.apiTokenLineEdit = QLineEdit()
         self.apiTokenLineEdit.setText(self.config.app_token)
-        self.apiTokenLineEdit.setPlaceholderText("Application Token")
+        self.apiTokenLineEdit.setPlaceholderText("Client Secret")
+        self.apiTokenLineEdit.setToolTip(tooltip)
         self.apiTokenLineEdit.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
         layoutHorizontal = QHBoxLayout()
         layoutHorizontal.addWidget(self.apiIdSpinBox)
         layoutHorizontal.addWidget(self.apiTokenLineEdit)
-        layout.addRow("API Credentials", layoutHorizontal)
+        credentialsLabel = QLabel("OAuth Credentials")
+        credentialsLabel.setToolTip(tooltip)
+        layout.addRow(credentialsLabel, layoutHorizontal)
 
     def createCollections(self, layout):
         self.collectionLineEdits = []
@@ -93,7 +108,7 @@ class ConfigWindow(QWidget):
     def createSaveButton(self, layout):
         self.saveButton = QPushButton("Save and Reload")
         self.saveButton.clicked.connect(self.saveConfig)
-        layout.addRow(self.saveButton)
+        layout.addWidget(self.saveButton)
 
     def saveConfig(self):
         self.config.directory = self.directoryLineEdit.text()
