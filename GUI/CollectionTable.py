@@ -107,7 +107,7 @@ class CollectionTableView(QTableView):
             subtract = menu.addMenu("Subtract")
             for index, collection in enumerate(self.collectionDatabase.collections):
                 if selected[0] != index:
-                    subtract.addAction(collection.name, lambda index=index: self.subtractCollections(index))
+                    subtract.addAction(collection.name, lambda index=index: self.subtractCollection(index))
 
         if len(selected) > 1:
             menu.addAction("Merge", self.mergeCollections)
@@ -134,7 +134,7 @@ class CollectionTableView(QTableView):
         self.collectionDatabase.invert(self.selectedRows(), self.config.inverse)
         self.refresh()
 
-    def subtractCollections(self, index):
+    def subtractCollection(self, index):
         self.collectionDatabase.subtract(self.selectedRows()[0], index, self.config.subtract)
         self.refresh()
 

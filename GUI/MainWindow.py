@@ -3,6 +3,7 @@ from Models.Config import Config
 from Models.CollectionDatabase import CollectionDatabase
 from GUI.ConfigWindow import ConfigWindow
 from GUI.CollectionTable import CollectionTableView
+from GUI.BeatmapTable import BeatmapTableView
 from GUI.Generate.BestsWindow import GenerateBestsWindow
 from GUI.Generate.FilterBeatmapsWindow import GenerateFilterBeatmapsWindow
 from GUI.Generate.FilterScoresWindow import GenerateFilterScoresWindow
@@ -10,7 +11,7 @@ from GUI.Generate.FirstsCountryWindow import GenerateFirstsCountryWindow
 from GUI.Generate.FirstsGlobalWindow import GenerateFirstsGlobalWindow
 from GUI.Generate.LeaderboardsWindow import GenerateLeaderboardsWindow
 from GUI.Generate.LeewaysWindow import GenerateLeewaysWindow
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QApplication, QFileDialog, QLabel, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QApplication, QFileDialog, QLabel, QMessageBox, QSplitter, QSizePolicy
 from PyQt6.QtGui import QIcon, QKeySequence
 from importlib import import_module
 from ossapi import Ossapi
@@ -24,7 +25,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__(parent=None)
         self.setWindowTitle(self.name)
-        self.resize(500, 600)
+        self.resize(1000, 600)
         self.setAcceptDrops(True)
 
         try: self.icon = QIcon(os.path.join(sys._MEIPASS, "files/icon.png"))
@@ -41,15 +42,29 @@ class MainWindow(QMainWindow):
 
     def createLayout(self):
         layout = QVBoxLayout()
-        self.createCollectionTable(layout)
+        self.createTables(layout)
         self.createStatusLabel(layout)
         self.createCentralWidget(layout)
         self.createMenu()
 
+    def createTables(self, layout):
+        splitter = QSplitter(self)
+        self.createCollectionTable(splitter)
+        self.createBeatmapTable(splitter)
+        splitter.setStretchFactor(1, 20)
+        splitter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        layout.addWidget(splitter)
+
     def createCollectionTable(self, layout):
         self.collectionTable = CollectionTableView(self)
-        layout.addWidget(self.collectionTable)
         self.collectionTable.refresh()
+        layout.addWidget(self.collectionTable)
+
+    def createBeatmapTable(self, layout):
+        self.beatmapTable = BeatmapTableView(self)
+        self.beatmapTable.refresh()
+        self.collectionTable.clicked.connect(self.beatmapTable.updateIndex)
+        layout.addWidget(self.beatmapTable)
 
     def createStatusLabel(self, layout):
         self.statusLabel = QLabel()
