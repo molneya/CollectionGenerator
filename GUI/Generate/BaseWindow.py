@@ -2,7 +2,6 @@
 from Models.Filter import Filter
 from PyQt6.QtWidgets import QWidget, QFormLayout, QLineEdit, QPushButton, QProgressDialog, QApplication, QCheckBox, QComboBox, QHBoxLayout, QSpinBox, QMessageBox, QLabel
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon
 from PyQt6 import QtTest
 
 class GenerateBaseWindow(QWidget):

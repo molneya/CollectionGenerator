@@ -3,15 +3,10 @@ from PyQt6.QtWidgets import QTableView, QAbstractItemView
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
 
 class BeatmapTableModel(QAbstractTableModel):
-    def __init__(self, collectionDatabase):
+    def __init__(self, collection):
         super().__init__(None)
-        self.collectionDatabase = collectionDatabase
-        self.beatmaps = []
+        self.beatmaps = list(collection.beatmaps)
         self.headers = ["Artist", "Title", "Creator", "Version"]
-
-    def setBeatmaps(self, index: QModelIndex):
-        row = index.row()
-        self.beatmaps = list(self.collectionDatabase.collections[row].beatmaps)
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int):
         if role == Qt.ItemDataRole.DisplayRole:
@@ -38,21 +33,14 @@ class BeatmapTableModel(QAbstractTableModel):
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
 class BeatmapTableView(QTableView):
-    def __init__(self, main):
+    def __init__(self, collection):
         super().__init__(None)
-        self.main = main
-        self.collectionDatabase = main.collectionDatabase
-
-        tableModel = BeatmapTableModel(self.collectionDatabase)
+        tableModel = BeatmapTableModel(collection)
         self.setModel(tableModel)
         self.setSortingEnabled(False)
         self.setShowGrid(False)
         self.setWordWrap(False)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-
-    def updateIndex(self, index: QModelIndex):
-        self.model().setBeatmaps(index)
-        self.refresh()
 
     def refresh(self):
         self.clearSelection()
