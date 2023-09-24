@@ -9,7 +9,35 @@ class BeatmapWindow(QMainWindow):
         super().__init__(parent=None)
         self.icon = main.icon
         self.collection = main.collectionDatabase.collections[index]
-        self.headers = ["Artist", "Title", "Creator", "Version"]
+        self.headers = [
+            "Artist",
+            "Title",
+            "Creator",
+            "Version",
+            "Hash",
+            "Status",
+            "Circles",
+            "Sliders",
+            "Spinners",
+            "AR",
+            "CS",
+            "HP",
+            "OD",
+            "Drain",
+            "Length",
+            "Beatmap ID",
+            "Beatmapset ID",
+            "Mode",
+            "Source",
+            "Missing",
+        ]
+        self.defaultHeaders = [
+            "Artist",
+            "Title",
+            "Creator",
+            "Version",
+            "Missing",
+        ]
 
         self.setWindowTitle(self.collection.name)
         self.setWindowIcon(self.icon)
@@ -22,7 +50,6 @@ class BeatmapWindow(QMainWindow):
         self.createBeatmapTable(layout)
         self.createCentralWidget(layout)
         self.createMenu()
-        self.setColumnsDefaultHidden()
 
     def createBeatmapTable(self, layout):
         self.beatmapTable = BeatmapTableView(self.collection)
@@ -38,7 +65,8 @@ class BeatmapWindow(QMainWindow):
         fileMenu = self.menuBar().addMenu("File")
         fileMenu.addAction("Exit", QKeySequence("Alt+F4"), self.close)
         viewMenu = self.menuBar().addMenu("View")
-        self.columns = [QAction(header, checkable=True, checked=False) for header in self.headers]
+        self.columns = [QAction(header, checkable=True, checked=header in self.defaultHeaders) for header in self.headers]
+        self.setColumnsCheckedVisible()
         for action in self.columns:
             viewMenu.addAction(action)
         viewMenu.triggered.connect(self.setColumnsCheckedVisible)
@@ -46,7 +74,3 @@ class BeatmapWindow(QMainWindow):
     def setColumnsCheckedVisible(self):
         for i, action in enumerate(self.columns):
             self.beatmapTable.setColumnHidden(i, not action.isChecked())
-
-    def setColumnsDefaultHidden(self):
-        self.beatmapTable.setColumnHidden(2, True)
-        self.beatmapTable.setColumnHidden(3, True)

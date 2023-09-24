@@ -1,12 +1,33 @@
 
-from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu
+from PyQt6.QtWidgets import QTableView, QAbstractItemView
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
 
 class BeatmapTableModel(QAbstractTableModel):
     def __init__(self, collection):
         super().__init__(None)
         self.beatmaps = list(collection.beatmaps)
-        self.headers = ["Artist", "Title", "Creator", "Version"]
+        self.headers = [
+            "Artist",
+            "Title",
+            "Creator",
+            "Version",
+            "Hash",
+            "Status",
+            "Circles",
+            "Sliders",
+            "Spinners",
+            "AR",
+            "CS",
+            "HP",
+            "OD",
+            "Drain",
+            "Length",
+            "Beatmap ID",
+            "Beatmapset ID",
+            "Mode",
+            "Source",
+            "Missing",
+        ]
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int):
         if role == Qt.ItemDataRole.DisplayRole:
@@ -24,10 +45,29 @@ class BeatmapTableModel(QAbstractTableModel):
             row = index.row()
             col = index.column()
             beatmap = self.beatmaps[row]
-            if col == 0: return beatmap.artist
-            if col == 1: return beatmap.title
-            if col == 2: return beatmap.creator
-            if col == 3: return beatmap.version
+            indexes = [
+                beatmap.artist,
+                beatmap.title,
+                beatmap.creator,
+                beatmap.version,
+                beatmap.hash,
+                beatmap.status,
+                beatmap.circles,
+                beatmap.sliders,
+                beatmap.spinners,
+                beatmap.ar,
+                beatmap.cs,
+                beatmap.hp,
+                beatmap.od,
+                beatmap.drain,
+                beatmap.length,
+                beatmap.beatmap_id,
+                beatmap.beatmapset_id,
+                beatmap.mode,
+                beatmap.source,
+                beatmap.missing,
+            ]
+            return indexes[col]
 
     def flags(self, index: QModelIndex):
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
@@ -47,4 +87,3 @@ class BeatmapTableView(QTableView):
         self.model().layoutChanged.emit()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
-
