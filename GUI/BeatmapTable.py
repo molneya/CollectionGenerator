@@ -1,5 +1,5 @@
 
-from PyQt6.QtWidgets import QTableView, QAbstractItemView
+from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
 
 class BeatmapTableModel(QAbstractTableModel):
@@ -47,3 +47,4 @@ class BeatmapTableView(QTableView):
         self.model().layoutChanged.emit()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
+

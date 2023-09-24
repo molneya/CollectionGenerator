@@ -1,7 +1,7 @@
 
 from GUI.BeatmapTable import BeatmapTableView
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget
-from PyQt6.QtGui import QKeySequence
+from PyQt6.QtGui import QKeySequence, QAction
 from PyQt6.QtCore import Qt
 
 class BeatmapWindow(QMainWindow):
@@ -9,6 +9,7 @@ class BeatmapWindow(QMainWindow):
         super().__init__(parent=None)
         self.icon = main.icon
         self.collection = main.collectionDatabase.collections[index]
+        self.headers = ["Artist", "Title", "Creator", "Version"]
 
         self.setWindowTitle(self.collection.name)
         self.setWindowIcon(self.icon)
@@ -21,6 +22,7 @@ class BeatmapWindow(QMainWindow):
         self.createBeatmapTable(layout)
         self.createCentralWidget(layout)
         self.createMenu()
+        self.setColumnsDefaultHidden()
 
     def createBeatmapTable(self, layout):
         self.beatmapTable = BeatmapTableView(self.collection)
@@ -35,3 +37,16 @@ class BeatmapWindow(QMainWindow):
     def createMenu(self):
         fileMenu = self.menuBar().addMenu("File")
         fileMenu.addAction("Exit", QKeySequence("Alt+F4"), self.close)
+        viewMenu = self.menuBar().addMenu("View")
+        self.columns = [QAction(header, checkable=True, checked=False) for header in self.headers]
+        for action in self.columns:
+            viewMenu.addAction(action)
+        viewMenu.triggered.connect(self.setColumnsCheckedVisible)
+
+    def setColumnsCheckedVisible(self):
+        for i, action in enumerate(self.columns):
+            self.beatmapTable.setColumnHidden(i, not action.isChecked())
+
+    def setColumnsDefaultHidden(self):
+        self.beatmapTable.setColumnHidden(2, True)
+        self.beatmapTable.setColumnHidden(3, True)
