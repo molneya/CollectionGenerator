@@ -83,7 +83,7 @@ class BeatmapTableModel(QAbstractTableModel):
         elif col == 7: self.beatmaps.sort(key=lambda x: x.circles)
         elif col == 8: self.beatmaps.sort(key=lambda x: x.sliders)
         elif col == 9: self.beatmaps.sort(key=lambda x: x.spinners)
-        elif col == 10:self.beatmaps.sort(key=lambda x: x.ar)
+        elif col == 10: self.beatmaps.sort(key=lambda x: x.ar)
         elif col == 11: self.beatmaps.sort(key=lambda x: x.cs)
         elif col == 12: self.beatmaps.sort(key=lambda x: x.hp)
         elif col == 13: self.beatmaps.sort(key=lambda x: x.od)
@@ -102,9 +102,10 @@ class BeatmapTableModel(QAbstractTableModel):
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
 class BeatmapTableView(QTableView):
-    def __init__(self, collection):
+    def __init__(self, main):
         super().__init__(None)
-        tableModel = BeatmapTableModel(collection)
+        self.main = main
+        tableModel = BeatmapTableModel(main.collection)
         self.setModel(tableModel)
         self.setSortingEnabled(True)
         self.setShowGrid(False)
@@ -138,6 +139,7 @@ class BeatmapTableView(QTableView):
         for row in selected[::-1]:
             self.model().beatmaps.pop(row)
         self.refresh()
+        self.main.updateStatusLabel()
 
     def openBeatmaps(self):
         sets = []
