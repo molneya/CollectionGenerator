@@ -1,7 +1,7 @@
 
 from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu
-from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
-from PyQt6.QtGui import QShortcut, QKeySequence
+from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel, QUrl
+from PyQt6.QtGui import QShortcut, QKeySequence, QDesktopServices
 from functools import cmp_to_key
 import locale
 
@@ -121,10 +121,13 @@ class BeatmapTableView(QTableView):
     def createShortcuts(self):
         self.deleteShortcut = QShortcut(QKeySequence("Delete"), self)
         self.deleteShortcut.activated.connect(self.deleteBeatmaps)
+        self.openShortcut = QShortcut(QKeySequence("Ctrl+P"), self)
+        self.openShortcut.activated.connect(self.openBeatmaps)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         menu.addAction("Delete", self.deleteBeatmaps)
+        menu.addAction("Open", self.openBeatmaps)
         menu.popup(event.globalPos())
 
     def deleteBeatmaps(self):
@@ -132,3 +135,24 @@ class BeatmapTableView(QTableView):
         for row in selected[::-1]:
             self.model().beatmaps.pop(row)
         self.refresh()
+
+    def openBeatmaps(self):
+        sets = []
+        beatmaps = []
+        for row in self.selectedRows():
+            beatmap = self.model().beatmaps[row]
+            if beatmap.beatmapset_id != 0:
+                if beatmap.beatmapset_id not in sets:
+                    sets.append(beatmap.beatmapset_id)
+            # If we don't have a set_id, fall back to beatmap_id
+            elif beatmap.beatmap_id != 0:
+                if beatmap.beatmap_id not in beatmaps:
+                    beatmaps.append(beatmap.beatmap_id)
+
+        # Open URLs in browser
+        for id in sets:
+            url = QUrl(f"https://osu.ppy.sh/s/{id}")
+            QDesktopServices.openUrl(url)
+        for id in beatmaps:
+            url = QUrl(f"https://osu.ppy.sh/b/{id}")
+            QDesktopServices.openUrl(url)
