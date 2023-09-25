@@ -32,6 +32,19 @@ class Beatmap:
     def __hash__(self) -> int:
         return hash(self.hash)
 
+    def name(self) -> str:
+        artist = ""
+        title = self.hash
+        creator = ""
+        version = ""
+        if self.artist and self.source: artist = f"{self.source} ({self.artist}) - "
+        elif self.artist: artist = f"{self.artist} - "
+        elif self.source: artist = f"{self.source} - "
+        if self.title: title = self.title
+        if self.creator: creator = f" ({self.creator})"
+        if self.version: version = f" [{self.version}]"
+        return f"{artist}{title}{creator}{version}"
+
     def search(self) -> str:
         return f"{self.artist} - {self.title} [{self.version}] {self.creator} {self.beatmap_id} {self.beatmapset_id} {self.source} {self.tags}".lower()
 

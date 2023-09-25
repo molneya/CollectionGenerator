@@ -10,6 +10,7 @@ class BeatmapWindow(QMainWindow):
         self.icon = main.icon
         self.collection = main.collectionDatabase.collections[index]
         self.headers = [
+            "Name",
             "Artist",
             "Title",
             "Creator",
@@ -32,10 +33,16 @@ class BeatmapWindow(QMainWindow):
             "Missing",
         ]
         self.defaultHeaders = [
-            "Artist",
-            "Title",
-            "Creator",
-            "Version",
+            "Name",
+            "Status",
+            "Circles",
+            "Sliders",
+            "Spinners",
+            "AR",
+            "CS",
+            "HP",
+            "OD",
+            "Mode",
             "Missing",
         ]
 
