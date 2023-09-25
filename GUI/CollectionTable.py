@@ -1,5 +1,6 @@
 
 from Models.Config import Config
+from GUI.BeatmapWindow import BeatmapWindow
 from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu, QFileDialog
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
 from PyQt6.QtGui import QShortcut, QKeySequence
@@ -41,9 +42,9 @@ class CollectionTableModel(QAbstractTableModel):
 
     def sort(self, col: int, order: int):
         self.layoutAboutToBeChanged.emit()
-        if col == 0: self.collectionDatabase.collections.sort(key=lambda x: len(x))
-        if col == 1: self.collectionDatabase.collections.sort(key=lambda x: x.missing)
-        if col == 2: self.collectionDatabase.collections.sort(key=cmp_to_key(lambda x, y: locale.strcoll(x.name, y.name)))
+        if   col == 0: self.collectionDatabase.collections.sort(key=lambda x: len(x))
+        elif col == 1: self.collectionDatabase.collections.sort(key=lambda x: x.missing)
+        elif col == 2: self.collectionDatabase.collections.sort(key=cmp_to_key(lambda x, y: locale.strcoll(x.name, y.name)))
         if order == Qt.SortOrder.DescendingOrder:
             self.collectionDatabase.collections.reverse()
         self.layoutChanged.emit()
@@ -59,8 +60,8 @@ class CollectionTableView(QTableView):
         self.main = main
         self.config = main.config
         self.collectionDatabase = main.collectionDatabase
-
         tableModel = CollectionTableModel(self.collectionDatabase)
+
         self.setModel(tableModel)
         self.setSortingEnabled(True)
         self.setShowGrid(False)
@@ -94,7 +95,12 @@ class CollectionTableView(QTableView):
         self.intersectShortcut.activated.connect(self.intersectCollections)
 
     def contextMenuEvent(self, event):
+        selected = self.selectedRows()
         menu = QMenu(self)
+
+        if len(selected) == 1:
+            menu.addAction("View",  lambda index=selected[0]: self.viewCollection(index))
+        
         menu.addAction("Save", self.saveCollections)
         menu.addAction("Delete", self.deleteCollections)
         menu.addSeparator()
@@ -102,18 +108,21 @@ class CollectionTableView(QTableView):
         menu.addAction("Invert", self.invertCollections)
         menu.addSeparator()
 
-        selected = self.selectedRows()
         if len(selected) == 1:
             subtract = menu.addMenu("Subtract")
             for index, collection in enumerate(self.collectionDatabase.collections):
                 if selected[0] != index:
-                    subtract.addAction(collection.name, lambda index=index: self.subtractCollections(index))
+                    subtract.addAction(collection.name, lambda index=index: self.subtractCollection(index))
 
         if len(selected) > 1:
             menu.addAction("Merge", self.mergeCollections)
             menu.addAction("Intersect", self.intersectCollections)
 
         menu.popup(event.globalPos())
+
+    def viewCollection(self, index):
+        self.childWindow = BeatmapWindow(self.main, index)
+        self.childWindow.show()
 
     def saveCollections(self):
         for index in self.selectedRows():
@@ -134,7 +143,7 @@ class CollectionTableView(QTableView):
         self.collectionDatabase.invert(self.selectedRows(), self.config.inverse)
         self.refresh()
 
-    def subtractCollections(self, index):
+    def subtractCollection(self, index):
         self.collectionDatabase.subtract(self.selectedRows()[0], index, self.config.subtract)
         self.refresh()
 

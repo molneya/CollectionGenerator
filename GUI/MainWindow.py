@@ -48,8 +48,8 @@ class MainWindow(QMainWindow):
 
     def createCollectionTable(self, layout):
         self.collectionTable = CollectionTableView(self)
-        layout.addWidget(self.collectionTable)
         self.collectionTable.refresh()
+        layout.addWidget(self.collectionTable)
 
     def createStatusLabel(self, layout):
         self.statusLabel = QLabel()
