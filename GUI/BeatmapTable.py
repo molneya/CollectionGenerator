@@ -130,8 +130,8 @@ class BeatmapTableView(QTableView):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        menu.addAction("Delete", self.deleteBeatmaps)
-        menu.addAction("Open", self.openBeatmaps)
+        menu.addAction("Delete", QKeySequence("Delete"), self.deleteBeatmaps)
+        menu.addAction("Open", QKeySequence("Ctrl+P"), self.openBeatmaps)
         menu.popup(event.globalPos())
 
     def deleteBeatmaps(self):
