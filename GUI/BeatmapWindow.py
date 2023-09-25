@@ -48,7 +48,7 @@ class BeatmapWindow(QMainWindow):
 
         self.setWindowTitle(self.collection.name)
         self.setWindowIcon(self.icon)
-        self.resize(1000, 600)
+        self.resize(1200, 600)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.createLayout()
 
