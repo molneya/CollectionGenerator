@@ -74,3 +74,4 @@ class BeatmapWindow(QMainWindow):
     def setColumnsCheckedVisible(self):
         for i, action in enumerate(self.columns):
             self.beatmapTable.setColumnHidden(i, not action.isChecked())
+        self.beatmapTable.refresh()

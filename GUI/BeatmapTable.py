@@ -1,6 +1,7 @@
 
-from PyQt6.QtWidgets import QTableView, QAbstractItemView
+from PyQt6.QtWidgets import QTableView, QAbstractItemView, QMenu
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
+from PyQt6.QtGui import QShortcut, QKeySequence
 
 class BeatmapTableModel(QAbstractTableModel):
     def __init__(self, collection):
@@ -81,9 +82,28 @@ class BeatmapTableView(QTableView):
         self.setShowGrid(False)
         self.setWordWrap(False)
         self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.createShortcuts()
 
     def refresh(self):
         self.clearSelection()
         self.model().layoutChanged.emit()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
+
+    def selectedRows(self):
+        return list({selection.row() for selection in self.selectedIndexes()})
+
+    def createShortcuts(self):
+        self.deleteShortcut = QShortcut(QKeySequence("Delete"), self)
+        self.deleteShortcut.activated.connect(self.deleteBeatmaps)
+
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+        menu.addAction("Delete", self.deleteBeatmaps)
+        menu.popup(event.globalPos())
+
+    def deleteBeatmaps(self):
+        selected = self.selectedRows()
+        for row in selected[::-1]:
+            self.model().beatmaps.pop(row)
+        self.refresh()
