@@ -81,6 +81,8 @@ class CollectionTableView(QTableView):
         return list({selection.row() for selection in self.selectedIndexes()})
 
     def createShortcuts(self):
+        self.viewShortcut = QShortcut(QKeySequence("Ctrl+P"), self)
+        self.viewShortcut.activated.connect(lambda: self.viewCollection(self.selectedRows()[0]))
         self.saveShortcut = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
         self.saveShortcut.activated.connect(self.saveCollections)
         self.deleteShortcut = QShortcut(QKeySequence("Delete"), self)
@@ -99,13 +101,13 @@ class CollectionTableView(QTableView):
         menu = QMenu(self)
 
         if len(selected) == 1:
-            menu.addAction("View",  lambda index=selected[0]: self.viewCollection(index))
+            menu.addAction("View", QKeySequence("Ctrl+P"), lambda index=selected[0]: self.viewCollection(index))
         
-        menu.addAction("Save", self.saveCollections)
-        menu.addAction("Delete", self.deleteCollections)
+        menu.addAction("Save", QKeySequence("Ctrl+Shift+S"), self.saveCollections)
+        menu.addAction("Delete", QKeySequence("Delete"), self.deleteCollections)
         menu.addSeparator()
-        menu.addAction("Duplicate", self.duplicateCollections)
-        menu.addAction("Invert", self.invertCollections)
+        menu.addAction("Duplicate", QKeySequence("Ctrl+D"), self.duplicateCollections)
+        menu.addAction("Invert", QKeySequence("Ctrl+I"), self.invertCollections)
         menu.addSeparator()
 
         if len(selected) == 1:
@@ -115,8 +117,8 @@ class CollectionTableView(QTableView):
                     subtract.addAction(collection.name, lambda index=index: self.subtractCollection(index))
 
         if len(selected) > 1:
-            menu.addAction("Merge", self.mergeCollections)
-            menu.addAction("Intersect", self.intersectCollections)
+            menu.addAction("Merge", QKeySequence("Ctrl+M"), self.mergeCollections)
+            menu.addAction("Intersect", QKeySequence("Ctrl+U"), self.intersectCollections)
 
         menu.popup(event.globalPos())
 
