@@ -42,9 +42,9 @@ class CollectionTableModel(QAbstractTableModel):
 
     def sort(self, col: int, order: int):
         self.layoutAboutToBeChanged.emit()
-        if col == 0: self.collectionDatabase.collections.sort(key=lambda x: len(x))
-        if col == 1: self.collectionDatabase.collections.sort(key=lambda x: x.missing)
-        if col == 2: self.collectionDatabase.collections.sort(key=cmp_to_key(lambda x, y: locale.strcoll(x.name, y.name)))
+        if   col == 0: self.collectionDatabase.collections.sort(key=lambda x: len(x))
+        elif col == 1: self.collectionDatabase.collections.sort(key=lambda x: x.missing)
+        elif col == 2: self.collectionDatabase.collections.sort(key=cmp_to_key(lambda x, y: locale.strcoll(x.name, y.name)))
         if order == Qt.SortOrder.DescendingOrder:
             self.collectionDatabase.collections.reverse()
         self.layoutChanged.emit()
