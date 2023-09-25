@@ -82,3 +82,7 @@ class BeatmapWindow(QMainWindow):
         for i, action in enumerate(self.columns):
             self.beatmapTable.setColumnHidden(i, not action.isChecked())
         self.beatmapTable.refresh()
+
+    def closeEvent(self, event):
+        beatmaps = set(self.beatmapTable.model().beatmaps)
+        self.collection.beatmaps = beatmaps
